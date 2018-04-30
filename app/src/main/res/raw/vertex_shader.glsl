@@ -1,9 +1,8 @@
 attribute vec3 vPosition;
 
-uniform mat4 PMatrix;
-uniform mat4 MMatrix;
+uniform mat4 MPMatrix;
 
 void main()
 {
-    gl_Position = PMatrix * MMatrix * vec4(vPosition, 1);
+    gl_Position = MPMatrix * vec4(vPosition, 1);
 }

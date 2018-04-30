@@ -68,14 +68,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         program.start();
 
-        int PMatrixHandle = glGetUniformLocation(program.getProgramID(), "PMatrix");
-        glUniformMatrix4fv(PMatrixHandle, 1, false, projectionMatrix, 0);
-
         for (GameObject gameObject : gameObjects) {
             Mesh mesh = gameObject.getMesh();
 
-            int MMatrixHandle = glGetUniformLocation(program.getProgramID(), "MMatrix");
-            glUniformMatrix4fv(MMatrixHandle, 1, false, gameObject.getModelMatrix(), 0);
+            int MPMatrixHandle = glGetUniformLocation(program.getProgramID(), "MPMatrix");
+
+            float[] MPMatrix = new float[16];
+            Matrix.multiplyMM(MPMatrix, 0, projectionMatrix, 0, gameObject.getModelMatrix(), 0);
+            glUniformMatrix4fv(MPMatrixHandle, 1, false, MPMatrix, 0);
 
             int col = glGetUniformLocation(program.getProgramID(), "vColor");
             glUniform4fv(col, 1, gameObject.getColor(), 0);
