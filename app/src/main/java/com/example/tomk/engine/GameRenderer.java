@@ -83,6 +83,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             int size = glGetUniformLocation(program.getProgramID(), "size");
             glUniform2f(size, gameObject.getScale().x, gameObject.getScale().y);
 
+            int position = glGetUniformLocation(program.getProgramID(), "position");
+            glUniform2f(size, gameObject.getPosition().x, gameObject.getPosition().y);
+
             mesh.draw();
         }
 
