@@ -7,21 +7,21 @@ import com.example.tomk.engine.Vector2f;
  * Created by peto on 4/29/18.
  */
 
-public class Player extends GameObject {
+public class Circle extends GameObject {
 
-    public Player(Mesh mesh, Vector2f position, Vector2f scale, float[] color) {
+    public Circle(Mesh mesh, Vector2f position, Vector2f scale, float[] color) {
         super(position, scale, color);
     }
 
-    public Player(float x, float y, float scaleX, float scaleY, float[] color) {
+    public Circle(float x, float y, float scaleX, float scaleY, float[] color) {
         super(x, y, scaleX, scaleY, color);
     }
 
-    public Player(float x, float y, Vector2f scale, float[] color) {
+    public Circle(float x, float y, Vector2f scale, float[] color) {
         super(x, y, scale, color);
     }
 
-    public Player(float x, float y, float[] color) {
+    public Circle(float x, float y, float[] color) {
         super(x, y, color);
     }
 

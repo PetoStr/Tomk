@@ -54,7 +54,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     private void updateGameObjects() {
         for (GameObject gameObject : gameObjects) {
-            gameObject.update();
+            gameObject.onUpdate();
         }
     }
 
@@ -68,23 +68,23 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         program.start();
 
+        int PMatrix = glGetUniformLocation(program.getProgramID(), "PMatrix");
+        glUniformMatrix4fv(PMatrix, 1, false, projectionMatrix, 0);
+
         for (GameObject gameObject : gameObjects) {
             Mesh mesh = gameObject.getMesh();
 
-            int MPMatrixHandle = glGetUniformLocation(program.getProgramID(), "MPMatrix");
-
-            float[] MPMatrix = new float[16];
-            Matrix.multiplyMM(MPMatrix, 0, projectionMatrix, 0, gameObject.getModelMatrix(), 0);
-            glUniformMatrix4fv(MPMatrixHandle, 1, false, MPMatrix, 0);
+            int MMatrixHandle = glGetUniformLocation(program.getProgramID(), "MMatrix");
+            glUniformMatrix4fv(MMatrixHandle, 1, false, gameObject.getModelMatrix(), 0);
 
             int col = glGetUniformLocation(program.getProgramID(), "vColor");
             glUniform4fv(col, 1, gameObject.getColor(), 0);
 
             int size = glGetUniformLocation(program.getProgramID(), "size");
-            glUniform2f(size, gameObject.getScale().x, gameObject.getScale().y);
+            glUniform2fv(size, 1, gameObject.getSize().toArray(), 0);
 
-            int position = glGetUniformLocation(program.getProgramID(), "position");
-            glUniform2f(size, gameObject.getPosition().x, gameObject.getPosition().y);
+            int time = glGetUniformLocation(program.getProgramID(), "time");
+            glUniform1f(time, (float) (System.nanoTime() / 1e9));
 
             mesh.draw();
         }

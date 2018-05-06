@@ -12,23 +12,23 @@ import java.util.List;
  * Created by peto on 4/8/18.
  */
 
-public abstract class GameObject implements Updatable {
+public abstract class GameObject implements UpdateCallback {
 
     protected Mesh mesh;
 
     protected Vector2f position;
 
-    protected Vector2f scale;
+    protected Vector2f size;
 
     protected float[] modelMatrix;
 
     protected float[] color;
 
-    protected List<Updatable> updatables = new ArrayList<>();
+    protected List<UpdateCallback> updateCallbacks = new ArrayList<>();
 
-    public GameObject(Vector2f position, Vector2f scale, float[] color) {
+    public GameObject(Vector2f position, Vector2f size, float[] color) {
         this.position = position;
-        this.scale = scale;
+        this.size = size;
         this.color = color;
 
         modelMatrix = new float[16];
@@ -40,8 +40,8 @@ public abstract class GameObject implements Updatable {
         this(new Vector2f(x, y), new Vector2f(scaleX, scaleY), color);
     }
 
-    public GameObject(float x, float y, Vector2f scale, float[] color) {
-        this(new Vector2f(x, y), scale, color);
+    public GameObject(float x, float y, Vector2f size, float[] color) {
+        this(new Vector2f(x, y), size, color);
     }
 
     public GameObject(float x, float y, float[] color) {
@@ -51,13 +51,13 @@ public abstract class GameObject implements Updatable {
     public void createModelMatrix() {
         Matrix.setIdentityM(modelMatrix, 0);
         Matrix.translateM(modelMatrix, 0, position.x, position.y, 0);
-        Matrix.scaleM(modelMatrix, 0, scale.x, scale.y, 1.0f);
+        Matrix.scaleM(modelMatrix, 0, size.x, size.y, 1.0f);
     }
 
     @Override
-    public void update() {
-        for (Updatable updatable : updatables) {
-            updatable.update();
+    public void onUpdate() {
+        for (UpdateCallback updateCallback : updateCallbacks) {
+            updateCallback.onUpdate();
         }
         createModelMatrix();
     }
@@ -67,8 +67,8 @@ public abstract class GameObject implements Updatable {
         position.y += dy;
     }
 
-    public void onUpdate(Updatable updatable) {
-        this.updatables.add(updatable);
+    public void onUpdate(UpdateCallback updateCallback) {
+        this.updateCallbacks.add(updateCallback);
     }
 
     protected abstract void createMesh();
@@ -101,11 +101,11 @@ public abstract class GameObject implements Updatable {
         this.color = color;
     }
 
-    public Vector2f getScale() {
-        return scale;
+    public Vector2f getSize() {
+        return size;
     }
 
-    public void setScale(Vector2f scale) {
-        this.scale = scale;
+    public void setSize(Vector2f size) {
+        this.size = size;
     }
 }

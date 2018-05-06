@@ -18,4 +18,8 @@ public class Vector2f {
         this(0.0f, 0.0f);
     }
 
+    public float[] toArray() {
+        return new float[] { this.x, this.y };
+    }
+
 }
