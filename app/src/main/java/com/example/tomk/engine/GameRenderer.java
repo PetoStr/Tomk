@@ -7,7 +7,9 @@ import com.example.tomk.engine.objects.GameObject;
 import com.example.tomk.game.GameGLSurfaceView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -21,6 +23,8 @@ import static android.opengl.GLES20.*;
 public class GameRenderer implements GLSurfaceView.Renderer {
 
     private ShaderProgram program;
+
+    private Map<String, Integer> uniformLocations;
 
     private int fps;
     private long startTime;
@@ -49,6 +53,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         program = new ShaderProgram();
 
+        uniformLocations = new HashMap<>();
+        uniformLocations.put("PMatrix", glGetUniformLocation(program.getProgramID(), "PMatrix"));
+        uniformLocations.put("MMatrix", glGetUniformLocation(program.getProgramID(), "MMatrix"));
+        uniformLocations.put("size", glGetUniformLocation(program.getProgramID(), "size"));
+        uniformLocations.put("vColor", glGetUniformLocation(program.getProgramID(), "vColor"));
+        uniformLocations.put("time", glGetUniformLocation(program.getProgramID(), "time"));
+
         gameGLSurfaceView.surfaceCreated();
     }
 
@@ -68,23 +79,15 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         program.start();
 
-        int PMatrix = glGetUniformLocation(program.getProgramID(), "PMatrix");
-        glUniformMatrix4fv(PMatrix, 1, false, projectionMatrix, 0);
+        glUniformMatrix4fv(uniformLocations.get("PMatrix"), 1, false, projectionMatrix, 0);
 
         for (GameObject gameObject : gameObjects) {
             Mesh mesh = gameObject.getMesh();
 
-            int MMatrixHandle = glGetUniformLocation(program.getProgramID(), "MMatrix");
-            glUniformMatrix4fv(MMatrixHandle, 1, false, gameObject.getModelMatrix(), 0);
-
-            int col = glGetUniformLocation(program.getProgramID(), "vColor");
-            glUniform4fv(col, 1, gameObject.getColor(), 0);
-
-            int size = glGetUniformLocation(program.getProgramID(), "size");
-            glUniform2fv(size, 1, gameObject.getSize().toArray(), 0);
-
-            int time = glGetUniformLocation(program.getProgramID(), "time");
-            glUniform1f(time, (float) (System.nanoTime() / 1e9));
+            glUniformMatrix4fv(uniformLocations.get("MMatrix"), 1, false, gameObject.getModelMatrix(), 0);
+            glUniform4fv(uniformLocations.get("vColor"), 1, gameObject.getColor(), 0);
+            glUniform2fv(uniformLocations.get("size"), 1, gameObject.getSize().toArray(), 0);
+            glUniform1f(uniformLocations.get("time"), (float) (System.nanoTime() / 1e9));
 
             mesh.draw();
         }
