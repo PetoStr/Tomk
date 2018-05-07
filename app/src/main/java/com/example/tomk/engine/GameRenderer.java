@@ -65,7 +65,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     private void updateGameObjects() {
         for (GameObject gameObject : gameObjects) {
-            gameObject.onUpdate();
+            gameObject.onUpdate(gameObject);
         }
     }
 

@@ -5,7 +5,7 @@ import com.example.tomk.engine.Screen;
 import com.example.tomk.engine.objects.Circle;
 import com.example.tomk.engine.objects.GameObject;
 import com.example.tomk.engine.objects.Pipe;
-import com.example.tomk.engine.objects.UpdateCallback;
+import com.example.tomk.engine.objects.GameObjectUpdateCallback;
 
 /**
  * Created by zenit on 7. 5. 2018.
@@ -52,9 +52,9 @@ public class Level2 extends Level {
 
 
 
-        player.onUpdate(new UpdateCallback() {
+        player.onUpdate(new GameObjectUpdateCallback() {
             @Override
-            public void onUpdate() {
+            public void onUpdate(GameObject gameObject) {
                 if (!changingPipes) {
                     float x = pipes[currentPipe].getPosition().x;
                     float dy = Screen.deltaTouch.y;

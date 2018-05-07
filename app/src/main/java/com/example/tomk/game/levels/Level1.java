@@ -5,7 +5,7 @@ import com.example.tomk.engine.Screen;
 import com.example.tomk.engine.objects.GameObject;
 import com.example.tomk.engine.objects.Pipe;
 import com.example.tomk.engine.objects.Circle;
-import com.example.tomk.engine.objects.UpdateCallback;
+import com.example.tomk.engine.objects.GameObjectUpdateCallback;
 
 /**
  * Created by peto on 4/29/18.
@@ -36,6 +36,12 @@ public class Level1 extends Level {
         int m = Screen.width / pipesLength;
         for (int i = 0; i < pipesLength; i++) {
             pipes[i] = new Pipe(m * (i - 2) + m / 2, 0.0f, Screen.width / 200.0f, Screen.height, pipeColor);
+            pipes[i].onUpdate(new GameObjectUpdateCallback() {
+                @Override
+                public void onUpdate(GameObject gameObject) {
+                    gameObject.rotate(1f);
+                }
+            });
             gameRenderer.addGameObject(pipes[i]);
         }
 
@@ -46,9 +52,9 @@ public class Level1 extends Level {
         player = new Circle(pipes[currentPipe].getPosition().x, 0.0f, scale, scale, playerColor);
         gameRenderer.addGameObject(player);
 
-        player.onUpdate(new UpdateCallback() {
+        player.onUpdate(new GameObjectUpdateCallback() {
             @Override
-            public void onUpdate() {
+            public void onUpdate(GameObject gameObject) {
                 if (!changingPipes) {
                     float x = pipes[currentPipe].getPosition().x;
                     float dy = Screen.deltaTouch.y;
