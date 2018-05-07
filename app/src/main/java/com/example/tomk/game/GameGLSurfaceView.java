@@ -8,6 +8,7 @@ import com.example.tomk.engine.GameRenderer;
 import com.example.tomk.engine.Screen;
 import com.example.tomk.game.levels.Level;
 import com.example.tomk.game.levels.Level1;
+import com.example.tomk.game.levels.Level2;
 
 /**
  * Created by zenit on 26. 3. 2018.
@@ -30,7 +31,7 @@ public class GameGLSurfaceView extends GLSurfaceView {
     }
 
     public void surfaceCreated() {
-        Level level = new Level1(this.renderer);
+        Level level = new Level2(this.renderer);
     }
 
     @Override
