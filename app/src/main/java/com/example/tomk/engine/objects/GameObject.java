@@ -79,6 +79,7 @@ public abstract class GameObject implements GameObjectUpdateCallback {
     }
 
     protected abstract void createMesh();
+    public abstract int getObjectType();
 
     public Mesh getMesh() {
         return mesh;
@@ -123,4 +124,5 @@ public abstract class GameObject implements GameObjectUpdateCallback {
     public void setAngle(float angle) {
         this.angle = angle;
     }
+
 }

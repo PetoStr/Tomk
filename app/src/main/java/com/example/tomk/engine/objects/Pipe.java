@@ -26,6 +26,11 @@ public class Pipe extends GameObject {
     }
 
     @Override
+    public int getObjectType() {
+        return 1;
+    }
+
+    @Override
     protected void createMesh() {
         float coords[] = {
                 -0.5f, 0.5f, 0.0f,

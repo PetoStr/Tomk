@@ -46,6 +46,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
         int width = gameGLSurfaceView.getWidth();
         int height = gameGLSurfaceView.getHeight();
@@ -59,6 +60,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         uniformLocations.put("size", glGetUniformLocation(program.getProgramID(), "size"));
         uniformLocations.put("vColor", glGetUniformLocation(program.getProgramID(), "vColor"));
         uniformLocations.put("time", glGetUniformLocation(program.getProgramID(), "time"));
+        uniformLocations.put("objectType", glGetUniformLocation(program.getProgramID(), "objectType"));
 
         gameGLSurfaceView.surfaceCreated();
     }
@@ -87,19 +89,20 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             glUniformMatrix4fv(uniformLocations.get("MMatrix"), 1, false, gameObject.getModelMatrix(), 0);
             glUniform4fv(uniformLocations.get("vColor"), 1, gameObject.getColor(), 0);
             glUniform2fv(uniformLocations.get("size"), 1, gameObject.getSize().toArray(), 0);
-            glUniform1f(uniformLocations.get("time"), (float) (System.nanoTime() / 1e9));
+            glUniform1f(uniformLocations.get("time"), (float) (((System.nanoTime() - startTime) / 1e9) % (Math.PI * 5.0d)));
+            glUniform1i(uniformLocations.get("objectType"), gameObject.getObjectType());
 
             mesh.draw();
         }
 
         program.stop();
 
-        fps++;
+        /*fps++;
         if (System.nanoTime() - startTime > 1000000000L) {
             System.out.println("FPS: " + String.valueOf(fps));
             fps = 0;
             startTime = System.nanoTime();
-        }
+        }*/
 
         Screen.deltaFrameTime = (System.nanoTime() - currentTime) / 1e6;
     }
