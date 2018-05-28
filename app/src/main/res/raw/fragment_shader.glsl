@@ -5,6 +5,31 @@ varying vec4 fPos;
 uniform vec4 vColor;
 uniform vec2 size;
 uniform float time;
+uniform int objectType;
+
+vec4 drawCircle(vec4 color)
+{
+    vec2 center = vec2(0.0);
+
+    float dst = distance(fPos.xy, center);
+    if (dst == 0.0) dst = 0.01;
+    float intensity = 1.0 / (dst * 1.5) * (0.9 + abs(sin(time) / 10.0));
+    float alpha = max(intensity - 1.0, 0.0) - 1.0 + color.a;
+
+    return vec4(intensity * color.rgb, alpha);
+}
+
+vec4 drawPipe(vec4 color)
+{
+    float x = fPos.x;
+    if (x == 0.0) {
+        x = 0.001;
+    }
+
+    float intensity = abs(1.0 / x);
+
+    return intensity * color;
+}
 
 void main(void)
 {
@@ -17,12 +42,15 @@ void main(void)
 
     gl_FragColor = vec4(fPos.xyz / vec3(2.0) + vec3(0.5), alpha);*/
 
-    vec2 center = vec2(0.0);
+    vec4 color;
 
-    float dst = distance(fPos.xy, center);
-    if (dst == 0.0) dst = 0.01;
-    float intensity = 1.0 / (dst * 1.5);
+    if (objectType == 0) {
+        color = drawCircle(vColor);
+    } else if (objectType == 1) {
+        color = drawPipe(vColor);
+    } else {
+        color = vColor;
+    }
 
-    float alpha = max(intensity - 1.0, 0.0) - 1.0 + vColor.a;
-    gl_FragColor = vec4(intensity * vColor.rgb, alpha);
+    gl_FragColor = color;
 }

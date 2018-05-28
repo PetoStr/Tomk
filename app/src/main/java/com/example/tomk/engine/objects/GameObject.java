@@ -12,7 +12,7 @@ import java.util.List;
  * Created by peto on 4/8/18.
  */
 
-public abstract class GameObject implements UpdateCallback {
+public abstract class GameObject implements GameObjectUpdateCallback {
 
     protected Mesh mesh;
 
@@ -24,7 +24,9 @@ public abstract class GameObject implements UpdateCallback {
 
     protected float[] color;
 
-    protected List<UpdateCallback> updateCallbacks = new ArrayList<>();
+    private float angle;
+
+    protected List<GameObjectUpdateCallback> gameObjectUpdateCallbacks = new ArrayList<>();
 
     public GameObject(Vector2f position, Vector2f size, float[] color) {
         this.position = position;
@@ -51,13 +53,14 @@ public abstract class GameObject implements UpdateCallback {
     public void createModelMatrix() {
         Matrix.setIdentityM(modelMatrix, 0);
         Matrix.translateM(modelMatrix, 0, position.x, position.y, 0);
+        Matrix.rotateM(modelMatrix, 0, -angle, 0, 0, 1);
         Matrix.scaleM(modelMatrix, 0, size.x, size.y, 1.0f);
     }
 
     @Override
-    public void onUpdate() {
-        for (UpdateCallback updateCallback : updateCallbacks) {
-            updateCallback.onUpdate();
+    public void onUpdate(GameObject gameObject) {
+        for (GameObjectUpdateCallback gameObjectUpdateCallback : gameObjectUpdateCallbacks) {
+            gameObjectUpdateCallback.onUpdate(gameObject);
         }
         createModelMatrix();
     }
@@ -67,11 +70,16 @@ public abstract class GameObject implements UpdateCallback {
         position.y += dy;
     }
 
-    public void onUpdate(UpdateCallback updateCallback) {
-        this.updateCallbacks.add(updateCallback);
+    public void rotate(float da) {
+        angle = (angle + da) % 360;
+    }
+
+    public void onUpdate(GameObjectUpdateCallback gameObjectUpdateCallback) {
+        this.gameObjectUpdateCallbacks.add(gameObjectUpdateCallback);
     }
 
     protected abstract void createMesh();
+    public abstract int getObjectType();
 
     public Mesh getMesh() {
         return mesh;
@@ -108,4 +116,13 @@ public abstract class GameObject implements UpdateCallback {
     public void setSize(Vector2f size) {
         this.size = size;
     }
+
+    public float getAngle() {
+        return angle;
+    }
+
+    public void setAngle(float angle) {
+        this.angle = angle;
+    }
+
 }

@@ -26,6 +26,11 @@ public class Circle extends GameObject {
     }
 
     @Override
+    public int getObjectType() {
+        return 0;
+    }
+
+    @Override
     protected void createMesh() {
         /*float coords[] = {
                 0.0f, 0.622008459f, 0.0f, // top
