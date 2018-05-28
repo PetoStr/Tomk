@@ -18,6 +18,7 @@ public class Level2 extends Level {
     GameObject player;
     GameObject pipes[];
     GameObject start;
+    GameObject end;
 
     private int currentPipe;
     private boolean changingPipes;
@@ -44,8 +45,11 @@ public class Level2 extends Level {
         float scale = Screen.height / 20;
         //float size = Screen.height * 2;
 
-        start = new Circle(Screen.width / 200.0f, 0, scale * 1.8f, scale * 1.8f, startcirclecolor);
+        start = new Circle(Screen.width - Screen.width * 1.5f , 0, scale * 1.8f, scale * 1.8f, startcirclecolor);
         gameRenderer.addGameObject(start);
+
+        end = new Circle(Screen.width / 2.0f, 0, scale * 1.8f, scale * 1.8f, startcirclecolor);
+        gameRenderer.addGameObject(end);
 
         player = new Circle(pipes[currentPipe].getPosition().x, 0.0f, scale, scale, circlecolor);
         gameRenderer.addGameObject(player);
