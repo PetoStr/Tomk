@@ -21,10 +21,12 @@ public abstract class Level {
     protected GameObject pipes[];
     protected GameObject start;
     protected GameObject end;
+    protected GameObject barrier;
 
     protected int currentPipe;
     protected boolean changingPipes;
     private int directionX;
+    protected boolean h;
 
     public Level(GameRenderer gameRenderer) {
         this.gameRenderer = gameRenderer;
@@ -35,7 +37,9 @@ public abstract class Level {
         float[] circlecolor = { 1.0f, 0.0f, 0.0f, 1.0f };
         float[] pipecolor = {0.0f, 0.0f, 1.0f, 1.0f};
         float[] startcirclecolor = {0.0f , 1.0f ,0.0f, 1.0f};
+        float[] barriercolor = { 1.0f, 0.0f, 0.0f, 1.0f };
         int a = (int) ((Screen.width * 0.75f) / pipesCount);
+
 
         pipes = new Pipe[pipesCount];
 
@@ -43,6 +47,11 @@ public abstract class Level {
             pipes[i] = new Pipe(a * (i - pipesCount / 2) + a / 2, 0.0f, Screen.width / 200.0f, Screen.height, pipecolor);
             gameRenderer.addGameObject(pipes[i]);
         }
+
+        barrier = new Pipe(a * (2 - pipesCount / 2) + a / 2, 0.0f, Screen.width / 150.0f, Screen.height / 2, barriercolor);
+        gameRenderer.addGameObject(barrier);
+
+
 
         currentPipe = 0;
         float scale = Screen.height / 20;
@@ -57,9 +66,27 @@ public abstract class Level {
         player = new Circle(pipes[currentPipe].getPosition().x, 0.0f, scale, scale, circlecolor);
         gameRenderer.addGameObject(player);
 
+        barrier.onUpdate(new GameObjectUpdateCallback() {
+            @Override
+            public void onUpdate(GameObject gameObject) {
+
+                if (gameObject.getPosition().y < Screen.height / 2  && h)
+                    gameObject.move(0.0f, (float) (1.0f * Screen.deltaFrameTime));
+                else if (gameObject.getPosition().y >= Screen.height / 2)
+                    h = false;
+                else if (gameObject.getPosition().y > -Screen.height / 2 && !h)
+                    gameObject.move(0.0f, (float) (-1.0f * Screen.deltaFrameTime));
+                else if (gameObject.getPosition().y <= -Screen.height / 2)
+                    h = true;
+
+
+            }
+        });
+
         player.onUpdate(new GameObjectUpdateCallback() {
             @Override
             public void onUpdate(GameObject gameObject) {
+
                 if (!changingPipes) {
                     float x = pipes[currentPipe].getPosition().x;
                     float dy = Screen.deltaTouch.y;
