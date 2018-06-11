@@ -6,6 +6,7 @@ import com.example.tomk.engine.objects.Circle;
 import com.example.tomk.engine.objects.GameObject;
 import com.example.tomk.engine.objects.GameObjectUpdateCallback;
 import com.example.tomk.engine.objects.Pipe;
+import com.example.tomk.game.Line;
 
 /**
  * Created by peto on 4/29/18.
@@ -18,10 +19,10 @@ public abstract class Level {
     protected final int pipesCount = 8;
 
     protected GameObject player;
-    protected GameObject pipes[];
+    protected Line lines[];
     protected GameObject start;
     protected GameObject end;
-    protected GameObject barrier;
+    protected Line barrier;
 
     protected int currentPipe;
     protected boolean changingPipes;
@@ -33,6 +34,19 @@ public abstract class Level {
         init();
     }
 
+    public void restart() {
+
+        gameRenderer.removeGameObject(player);
+        for (Line line : lines) {
+            gameRenderer.removeGameObject(line.getPipe());
+        }
+        gameRenderer.removeGameObject(start);
+        gameRenderer.removeGameObject(end);
+        gameRenderer.removeGameObject(barrier.getPipe());
+
+        init();
+    }
+
     public void init() {
         float[] circlecolor = { 1.0f, 0.0f, 0.0f, 1.0f };
         float[] pipecolor = {0.0f, 0.0f, 1.0f, 1.0f};
@@ -40,16 +54,20 @@ public abstract class Level {
         float[] barriercolor = { 1.0f, 0.0f, 0.0f, 1.0f };
         int a = (int) ((Screen.width * 0.75f) / pipesCount);
 
+        currentPipe = 0;
+        changingPipes = false;
 
-        pipes = new Pipe[pipesCount];
+
+        lines = new Line[pipesCount];
 
         for (int i = 0; i < pipesCount; i++) {
-            pipes[i] = new Pipe(a * (i - pipesCount / 2) + a / 2, 0.0f, Screen.width / 200.0f, Screen.height, pipecolor);
-            gameRenderer.addGameObject(pipes[i]);
+            float speed = i % 2 == 0 ? 0.2f : -0.2f;
+            lines[i] = new Line(a * (i - pipesCount / 2) + a / 2, 0.0f, Screen.width / 200.0f, Screen.height, pipecolor, speed);
+            gameRenderer.addGameObject(lines[i].getPipe());
         }
 
-        barrier = new Pipe(a * (2 - pipesCount / 2) + a / 2, 0.0f, Screen.width / 150.0f, Screen.height / 2, barriercolor);
-        gameRenderer.addGameObject(barrier);
+        barrier = new Line(a * (2 - pipesCount / 2) + a / 2, 0.0f, Screen.width / 150.0f, Screen.height / 2, barriercolor, 0.5f);
+        gameRenderer.addGameObject(barrier.getPipe());
 
 
 
@@ -63,20 +81,22 @@ public abstract class Level {
         end = new Circle(Screen.width / 2.0f, 0, scale * 1.8f, scale * 1.8f, startcirclecolor);
         gameRenderer.addGameObject(end);
 
-        player = new Circle(pipes[currentPipe].getPosition().x, 0.0f, scale, scale, circlecolor);
+        player = new Circle(lines[currentPipe].getPipe().getPosition().x, 0.0f, scale, scale, circlecolor);
         gameRenderer.addGameObject(player);
 
-        barrier.onUpdate(new GameObjectUpdateCallback() {
+        barrier.getPipe().onUpdate(new GameObjectUpdateCallback() {
             @Override
             public void onUpdate(GameObject gameObject) {
 
+                gameObject.move(0.0f, (float) (barrier.getSpeed() * Screen.deltaFrameTime));
+
                 if (gameObject.getPosition().y < Screen.height / 2  && h)
-                    gameObject.move(0.0f, (float) (1.0f * Screen.deltaFrameTime));
-                else if (gameObject.getPosition().y >= Screen.height / 2)
+                    barrier.setSpeed(0.25f);
+                else if (gameObject.getPosition().y >= Screen.height / 2 && h)
                     h = false;
                 else if (gameObject.getPosition().y > -Screen.height / 2 && !h)
-                    gameObject.move(0.0f, (float) (-1.0f * Screen.deltaFrameTime));
-                else if (gameObject.getPosition().y <= -Screen.height / 2)
+                    barrier.setSpeed(-0.25f);
+                else if (gameObject.getPosition().y <= -Screen.height / 2 && !h)
                     h = true;
 
 
@@ -87,9 +107,12 @@ public abstract class Level {
             @Override
             public void onUpdate(GameObject gameObject) {
 
+                Line line = lines[currentPipe];
+                Pipe pipe = line.getPipe();
+
                 if (!changingPipes) {
-                    float x = pipes[currentPipe].getPosition().x;
-                    float dy = Screen.deltaTouch.y;
+                    float x = pipe.getPosition().x;
+                    float dy = (float) (Screen.deltaTouch.y + line.getSpeed() * Screen.deltaFrameTime);
 
                     player.getPosition().x = x;
 
@@ -111,10 +134,10 @@ public abstract class Level {
                     }
                 } else {
                     player.move(2.0f * directionX * (float) Screen.deltaFrameTime, 0.0f);
-                    if ((player.getPosition().x >= pipes[currentPipe].getPosition().x && directionX == 1)
-                            || (player.getPosition().x <= pipes[currentPipe].getPosition().x && directionX == -1)) {
+                    if ((player.getPosition().x >= pipe.getPosition().x && directionX == 1)
+                            || (player.getPosition().x <= pipe.getPosition().x && directionX == -1)) {
                         changingPipes = false;
-                        player.getPosition().x = pipes[currentPipe].getPosition().x;
+                        player.getPosition().x = pipe.getPosition().x;
                     }
                 }
             }
