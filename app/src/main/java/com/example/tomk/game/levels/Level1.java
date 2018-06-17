@@ -33,9 +33,9 @@ public class Level1 extends Level {
 
         pipes = new Pipe[4];
         int pipesLength = pipes.length;
-        int m = Screen.width / pipesLength;
+        int m = Screen.getWidth() / pipesLength;
         for (int i = 0; i < pipesLength; i++) {
-            pipes[i] = new Pipe(m * (i - 2) + m / 2, 0.0f, Screen.width / 200.0f, Screen.height, pipeColor);
+            pipes[i] = new Pipe(m * (i - 2) + m / 2, 0.0f, Screen.getWidth() / 200.0f, Screen.getHeight(), pipeColor);
             pipes[i].onUpdate(new GameObjectUpdateCallback() {
                 @Override
                 public void onUpdate(GameObject gameObject) {
@@ -46,7 +46,7 @@ public class Level1 extends Level {
         }
 
         currentPipe = 0;
-        float scale = Screen.height / 20;
+        float scale = Screen.getHeight() / 20;
         //float size = Screen.height * 2;
 
         player = new Circle(pipes[currentPipe].getPosition().x, 0.0f, scale, scale, playerColor);
@@ -57,17 +57,17 @@ public class Level1 extends Level {
             public void onUpdate(GameObject gameObject) {
                 if (!changingPipes) {
                     float x = pipes[currentPipe].getPosition().x;
-                    float dy = Screen.deltaTouch.y;
+                    float dy = Screen.getDeltaTouch().y;
 
                     player.getPosition().x = x;
                     player.move(0, dy);
 
-                    if (Screen.deltaTouch.x > 15) { // right
+                    if (Screen.getDeltaTouch().x > 15) { // right
                         currentPipe = (currentPipe + 1) % pipes.length;
                         changingPipes = true;
                     }
                 } else {
-                    player.move(2.0f * (float) Screen.deltaFrameTime, 0.0f);
+                    player.move(2.0f * (float) Screen.getDeltaFrameTime(), 0.0f);
                     if (player.getPosition().x >= pipes[currentPipe].getPosition().x) {
                         changingPipes = false;
                         player.getPosition().x = pipes[currentPipe].getPosition().x;

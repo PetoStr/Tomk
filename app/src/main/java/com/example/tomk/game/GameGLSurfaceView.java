@@ -43,17 +43,17 @@ public class GameGLSurfaceView extends GLSurfaceView {
         float x = e.getX() - getWidth() / 2;
         float y = getHeight() / 2 - e.getY();
 
-        Screen.deltaTouch.x = 0;
-        Screen.deltaTouch.y = 0;
+        Screen.getDeltaTouch().x = 0;
+        Screen.getDeltaTouch().y = 0;
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                Screen.deltaTouch.x = x - Screen.touch.x;
-                Screen.deltaTouch.y = y - Screen.touch.y;
+                Screen.getDeltaTouch().x = x - Screen.getTouch().x;
+                Screen.getDeltaTouch().y = y - Screen.getTouch().y;
         }
 
-        Screen.touch.x = x;
-        Screen.touch.y = y;
+        Screen.getTouch().x = x;
+        Screen.getTouch().y = y;
 
         //requestRender();
 
