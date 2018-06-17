@@ -13,11 +13,20 @@ public class Image extends GameObject {
 
     private final String name;
 
+    private boolean isSizeLinked;
+
     public Image(float x, float y, float scaleX, float scaleY, String name) {
         super(x, y, scaleX, scaleY, null);
 
         this.name = name;
         super.setTexture(name);
+    }
+
+    public Image(float x, float y, String name) {
+        this(x, y, 0, 0, name);
+        Texture texture = this.mesh.getTexture();
+        super.getSize().x = texture.getWidth();
+        super.getSize().y = texture.getHeight();
     }
 
     @Override
@@ -44,5 +53,29 @@ public class Image extends GameObject {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isSizeLinked() {
+        return isSizeLinked;
+    }
+
+    public void setSizeLinked(boolean sizeLinked) {
+        isSizeLinked = sizeLinked;
+    }
+
+    public void setWidth(float width) {
+        super.getSize().x = width;
+        if (isSizeLinked) {
+            float scale = width / super.mesh.getTexture().getWidth();
+            super.getSize().y = super.mesh.getTexture().getHeight() * scale;
+        }
+    }
+
+    public void setHeight(float height) {
+        super.getSize().y = height;
+        if (isSizeLinked) {
+            float scale = height / super.mesh.getTexture().getHeight();
+            super.getSize().x = super.mesh.getTexture().getWidth() * scale;
+        }
     }
 }

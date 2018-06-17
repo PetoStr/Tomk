@@ -36,11 +36,6 @@ public abstract class Level {
         init();
     }
 
-    public void restart() {
-        cleanUp();
-        init();
-    }
-
     public void init() {
         float[] circleColor = { 1.0f, 0.0f, 0.0f, 1.0f };
         float[] pipeColor = {0.0f, 0.0f, 1.0f, 1.0f};
@@ -56,7 +51,9 @@ public abstract class Level {
 
 
         /* background image */
-        Image img = new Image(0.0f, 0.0f, Screen.getWidth(), Screen.getHeight(), "bg.jpeg");
+        Image img = new Image(0.0f, 0.0f, "bg2.png");
+        img.setSizeLinked(true);
+        img.setHeight(Screen.getHeight());
         gameRenderer.addGameObject(img);
 
 
@@ -159,9 +156,7 @@ public abstract class Level {
 
                     /* check collision with player */
                     if (Util.intersection(player, pipe)) {
-                        currentPipe = 0;
-                        player.getPosition().x = lines[currentPipe].getPipe().getPosition().x;
-                        player.getPosition().y = 0.0f;
+                        restartPlayerPosition();
                     }
 
                     /* return barrier to the beginning if it is no longer visible (goes out of screen) */
@@ -196,6 +191,12 @@ public abstract class Level {
                 }
             }
         });
+    }
+
+    private void restartPlayerPosition() {
+        currentPipe = 0;
+        player.getPosition().x = lines[currentPipe].getPipe().getPosition().x;
+        player.getPosition().y = 0.0f;
     }
 
     public void cleanUp() {

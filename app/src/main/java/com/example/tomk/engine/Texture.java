@@ -20,6 +20,9 @@ public class Texture {
 
     private int[] id = new int[1];
 
+    private int width;
+    private int height;
+
     public Texture(String imagePath, int internalFormat) {
         createTexture(imagePath, internalFormat);
     }
@@ -49,9 +52,6 @@ public class Texture {
 
         bind();
 
-        int width = 0;
-        int height = 0;
-
         Bitmap bitmap = null;
 
         if (imagePath == null) {
@@ -69,6 +69,8 @@ public class Texture {
                     e.printStackTrace();
                 }
             }
+            this.width = bitmap.getWidth();
+            this.height = bitmap.getHeight();
             GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
             bitmap.recycle();
         }
@@ -89,4 +91,11 @@ public class Texture {
         return id[0];
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }
