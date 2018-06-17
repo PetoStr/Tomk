@@ -3,6 +3,7 @@ package com.example.tomk.engine.objects;
 import android.opengl.Matrix;
 
 import com.example.tomk.engine.Mesh;
+import com.example.tomk.engine.Texture;
 import com.example.tomk.engine.Vector2f;
 
 import java.util.ArrayList;
@@ -123,6 +124,14 @@ public abstract class GameObject implements GameObjectUpdateCallback {
 
     public void setAngle(float angle) {
         this.angle = angle;
+    }
+
+    public boolean hasColor() {
+        return color != null;
+    }
+
+    public void setTexture(String path) {
+        this.mesh.setTexture(new Texture(path));
     }
 
 }

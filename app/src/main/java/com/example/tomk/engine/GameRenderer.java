@@ -32,8 +32,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private final float[] projectionMatrix = new float[16];
 
     private List<GameObject> gameObjects = new ArrayList<>();
+    private boolean shouldBreak;
 
     private GameGLSurfaceView gameGLSurfaceView;
+
 
     public GameRenderer(GameGLSurfaceView surfaceView) {
         this.gameGLSurfaceView = surfaceView;
@@ -61,6 +63,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         uniformLocations.put("vColor", glGetUniformLocation(program.getProgramID(), "vColor"));
         uniformLocations.put("time", glGetUniformLocation(program.getProgramID(), "time"));
         uniformLocations.put("objectType", glGetUniformLocation(program.getProgramID(), "objectType"));
+        uniformLocations.put("hasColor", glGetUniformLocation(program.getProgramID(), "hasColor"));
+        uniformLocations.put("hasTexture", glGetUniformLocation(program.getProgramID(), "hasTexture"));
+        uniformLocations.put("texture", glGetUniformLocation(program.getProgramID(), "texture"));
 
         gameGLSurfaceView.surfaceCreated();
     }
@@ -68,6 +73,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private void updateGameObjects() {
         for (GameObject gameObject : gameObjects) {
             gameObject.onUpdate(gameObject);
+
+            if (shouldBreak) {
+                shouldBreak = false;
+                break;
+            }
         }
     }
 
@@ -87,10 +97,21 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             Mesh mesh = gameObject.getMesh();
 
             glUniformMatrix4fv(uniformLocations.get("MMatrix"), 1, false, gameObject.getModelMatrix(), 0);
-            glUniform4fv(uniformLocations.get("vColor"), 1, gameObject.getColor(), 0);
+
+            boolean hasColor = gameObject.hasColor();
+            glUniform1i(uniformLocations.get("hasColor"), hasColor ? 1 : 0);
+            if (hasColor) {
+                glUniform4fv(uniformLocations.get("vColor"), 1, gameObject.getColor(), 0);
+            }
             glUniform2fv(uniformLocations.get("size"), 1, gameObject.getSize().toArray(), 0);
             glUniform1f(uniformLocations.get("time"), (float) (((System.nanoTime() - startTime) / 1e9) % (Math.PI * 5.0d)));
             glUniform1i(uniformLocations.get("objectType"), gameObject.getObjectType());
+
+            boolean hasTexture = mesh.hasTexture();
+            glUniform1i(uniformLocations.get("hasTexture"), hasTexture ? 1 : 0);
+            if (hasTexture) {
+                glUniform1i(uniformLocations.get("texture"), 0);
+            }
 
             mesh.draw();
         }
@@ -104,12 +125,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             startTime = System.nanoTime();
         }*/
 
-        Screen.deltaFrameTime = (System.nanoTime() - currentTime) / 1e6;
+        Screen.setDeltaFrameTime((System.nanoTime() - currentTime) / 1e6);
     }
 
     private void updateScreen(int width, int height) {
-        Screen.width = width;
-        Screen.height = height;
+        Screen.setWidth(width);
+        Screen.setHeight(height);
 
         Matrix.orthoM(projectionMatrix, 0, -width / 2, width / 2, -height / 2, height / 2, -1.0f, 1.0f);
     }
@@ -130,6 +151,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     public void removeGameObject(GameObject gameObject) {
         this.gameObjects.remove(gameObject);
+        shouldBreak = true;
+    }
+
+    public void removeAllGameObjects() {
+        gameObjects.clear();
+        shouldBreak = true;
     }
 
 }
