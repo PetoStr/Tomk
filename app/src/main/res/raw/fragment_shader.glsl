@@ -1,11 +1,15 @@
 precision mediump float;
 
 varying vec4 fPos;
+varying vec2 f_uv;
 
 uniform vec4 vColor;
 uniform vec2 size;
 uniform float time;
 uniform int objectType;
+uniform bool hasTexture;
+uniform bool hasColor;
+uniform sampler2D texture;
 
 vec4 drawCircle(vec4 color)
 {
@@ -13,7 +17,7 @@ vec4 drawCircle(vec4 color)
 
     float dst = distance(fPos.xy, center);
     if (dst == 0.0) dst = 0.01;
-    float intensity = 1.0 / (dst * 1.5) * (0.9 + abs(sin(time) / 10.0));
+    float intensity = 1.0 / (dst * 0.8) * (0.9 + abs(sin(time) / 10.0));
     float alpha = max(intensity - 1.0, 0.0) - 1.0 + color.a;
 
     return vec4(intensity * color.rgb, alpha);
@@ -42,14 +46,20 @@ void main(void)
 
     gl_FragColor = vec4(fPos.xyz / vec3(2.0) + vec3(0.5), alpha);*/
 
-    vec4 color;
+    vec4 color = vec4(0.0);
 
-    if (objectType == 0) {
-        color = drawCircle(vColor);
-    } else if (objectType == 1) {
-        color = drawPipe(vColor);
-    } else {
-        color = vColor;
+    if (hasColor) {
+        if (objectType == 0) {
+            color = drawCircle(vColor);
+        } else if (objectType == 1) {
+            color = drawPipe(vColor);
+        } else {
+            color = vColor;
+        }
+    }
+
+    if (hasTexture) {
+        color += texture2D(texture, f_uv);
     }
 
     gl_FragColor = color;
