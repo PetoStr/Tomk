@@ -47,4 +47,8 @@ public final class Screen {
     public static void setDeltaFrameTime(double deltaFrameTime) {
         Screen.deltaFrameTime = deltaFrameTime;
     }
+
+    public static double getTime() {
+        return System.nanoTime() / 1e6;
+    }
 }

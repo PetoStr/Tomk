@@ -32,6 +32,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private final float[] projectionMatrix = new float[16];
 
     private List<GameObject> gameObjects = new ArrayList<>();
+    private List<UpdateCallback> updateCallbacks = new ArrayList<>();
     private boolean shouldBreak;
 
     private GameGLSurfaceView gameGLSurfaceView;
@@ -81,11 +82,18 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         }
     }
 
+    private void updateListeners() {
+        for (UpdateCallback updateCallback : updateCallbacks) {
+            updateCallback.onUpdate();
+        }
+    }
+
     @Override
     public void onDrawFrame(GL10 gl10) {
         double currentTime = System.nanoTime();
 
         updateGameObjects();
+        updateListeners();
 
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -94,6 +102,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         glUniformMatrix4fv(uniformLocations.get("PMatrix"), 1, false, projectionMatrix, 0);
 
         for (GameObject gameObject : gameObjects) {
+            if (!gameObject.isVisible()) continue;
+
             Mesh mesh = gameObject.getMesh();
 
             glUniformMatrix4fv(uniformLocations.get("MMatrix"), 1, false, gameObject.getModelMatrix(), 0);
@@ -156,6 +166,16 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     public void removeAllGameObjects() {
         gameObjects.clear();
+        shouldBreak = true;
+    }
+
+    public void onUpdate(UpdateCallback updateCallback) {
+        this.updateCallbacks.add(updateCallback);
+        shouldBreak = true;
+    }
+
+    public void removeOnUpdate(UpdateCallback updateCallback) {
+        this.updateCallbacks.remove(updateCallback);
         shouldBreak = true;
     }
 

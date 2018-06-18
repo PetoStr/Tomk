@@ -8,7 +8,8 @@ import com.example.tomk.engine.objects.GameObject;
 import com.example.tomk.engine.objects.GameObjectUpdateCallback;
 import com.example.tomk.engine.objects.Image;
 import com.example.tomk.engine.objects.Pipe;
-import com.example.tomk.game.Line;
+import com.example.tomk.game.gameobjects.Animation;
+import com.example.tomk.game.gameobjects.Line;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +55,12 @@ public abstract class Level {
         Image img = new Image(0.0f, 0.0f, "bg2.png");
         img.setSizeLinked(true);
         img.setHeight(Screen.getHeight());
-        gameRenderer.addGameObject(img);
+        Image img2 = new Image(0.0f, 0.0f, "bg.jpeg");
+        img2.setSizeLinked(true);
+        img2.setHeight(Screen.getHeight());
+        Image[] images = { img, img2 };
+        Animation animation = new Animation(images, 1000.0f, gameRenderer);
+        animation.activate();
 
 
 
@@ -132,6 +138,8 @@ public abstract class Level {
                             || (player.getPosition().x <= pipe.getPosition().x && directionX == -1)) {
                         changingPipes = false;
                         player.getPosition().x = pipe.getPosition().x;
+                        Screen.getDeltaTouch().x = 0;
+                        Screen.getDeltaTouch().y = 0;
                     }
                 }
             }

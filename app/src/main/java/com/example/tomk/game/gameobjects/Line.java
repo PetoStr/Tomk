@@ -1,4 +1,4 @@
-package com.example.tomk.game;
+package com.example.tomk.game.gameobjects;
 
 import com.example.tomk.engine.objects.GameObject;
 import com.example.tomk.engine.objects.GameObjectUpdateCallback;

@@ -27,6 +27,8 @@ public abstract class GameObject implements GameObjectUpdateCallback {
 
     private float angle;
 
+    private boolean isVisible = true;
+
     protected List<GameObjectUpdateCallback> gameObjectUpdateCallbacks = new ArrayList<>();
 
     public GameObject(Vector2f position, Vector2f size, float[] color) {
@@ -134,4 +136,11 @@ public abstract class GameObject implements GameObjectUpdateCallback {
         this.mesh.setTexture(new Texture(path));
     }
 
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+    }
 }
