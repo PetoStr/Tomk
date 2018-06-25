@@ -23,6 +23,8 @@ public class Animation implements UpdateCallback {
 
     private double startTime;
 
+    private boolean repeating = false;
+
     public Animation(Image[] images, float fps, GameRenderer gameRenderer) {
         this.images = images;
         this.fps = fps;
@@ -33,7 +35,6 @@ public class Animation implements UpdateCallback {
             image.setVisible(false);
             gameRenderer.addGameObject(image);
         }
-        images[currentImage].setVisible(true);
     }
 
     @Override
@@ -43,6 +44,11 @@ public class Animation implements UpdateCallback {
 
             currentImage++;
             if (currentImage >= images.length) {
+                if (!repeating) {
+                    deactivate();
+                    return;
+                }
+
                 currentImage = 0;
             }
 
@@ -53,11 +59,20 @@ public class Animation implements UpdateCallback {
     }
 
     public void activate() {
+        images[currentImage].setVisible(true);
         this.startTime = Screen.getTime();
         gameRenderer.onUpdate(this);
     }
 
     public void deactivate() {
         gameRenderer.removeOnUpdate(this);
+    }
+
+    public boolean isRepeating() {
+        return repeating;
+    }
+
+    public void setRepeating(boolean repeating) {
+        this.repeating = repeating;
     }
 }
