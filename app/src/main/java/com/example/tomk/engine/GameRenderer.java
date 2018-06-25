@@ -37,6 +37,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     private GameGLSurfaceView gameGLSurfaceView;
 
+    private Camera camera;
 
     public GameRenderer(GameGLSurfaceView surfaceView) {
         this.gameGLSurfaceView = surfaceView;
@@ -55,10 +56,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         int height = gameGLSurfaceView.getHeight();
         updateScreen(width, height);
 
+        camera = Camera.getInstance();
+
         program = new ShaderProgram();
 
         uniformLocations = new HashMap<>();
         uniformLocations.put("PMatrix", glGetUniformLocation(program.getProgramID(), "PMatrix"));
+        uniformLocations.put("VMatrix", glGetUniformLocation(program.getProgramID(), "VMatrix"));
         uniformLocations.put("MMatrix", glGetUniformLocation(program.getProgramID(), "MMatrix"));
         uniformLocations.put("size", glGetUniformLocation(program.getProgramID(), "size"));
         uniformLocations.put("vColor", glGetUniformLocation(program.getProgramID(), "vColor"));
@@ -94,12 +98,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         updateGameObjects();
         updateListeners();
+        camera.createViewMatrix();
 
         glClear(GL_COLOR_BUFFER_BIT);
 
         program.start();
 
         glUniformMatrix4fv(uniformLocations.get("PMatrix"), 1, false, projectionMatrix, 0);
+        glUniformMatrix4fv(uniformLocations.get("VMatrix"), 1, false, camera.getViewMatrix(), 0);
 
         for (GameObject gameObject : gameObjects) {
             if (!gameObject.isVisible()) continue;
